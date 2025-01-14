@@ -1,0 +1,186 @@
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local UserBox = Instance.new("TextBox")
+local FreezeButton = Instance.new("TextButton")
+local AutoAcceptButton = Instance.new("TextButton")
+local TargetPlayerButton = Instance.new("TextButton") -- New Target Player Button
+local UICorner = Instance.new("UICorner")
+local UIGradient = Instance.new("UIGradient")
+local NotificationFrame = Instance.new("Frame")
+local NotificationText = Instance.new("TextLabel")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.Name = "EnhancedTradeTool"
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.new(0, 0, 0) -- Black
+Frame.BorderSizePixel = 0
+Frame.Position = UDim2.new(0.5, -125, 0.5, -150)
+Frame.Size = UDim2.new(0, 250, 0, 350) -- Increased size for the new button
+
+UICorner.Parent = Frame
+UICorner.CornerRadius = UDim.new(0, 10)
+
+-- Applying gradient to the background of the main frame
+local gradient = Instance.new("UIGradient", Frame)
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)), -- Red
+    ColorSequenceKeypoint.new(1, Color3.new(0.5, 0, 0)) -- Darker Red
+})
+
+Title.Parent = Frame
+Title.Text = "TRADE SCAM"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 20
+Title.TextColor3 = Color3.new(1, 0, 0) -- Red
+Title.BackgroundTransparency = 1
+Title.Size = UDim2.new(1, 0, 0, 40)
+
+UserBox.Parent = Frame
+UserBox.PlaceholderText = "Enter Victim..."
+UserBox.Font = Enum.Font.Gotham
+UserBox.TextSize = 14
+UserBox.TextColor3 = Color3.new(1, 1, 1) -- White
+UserBox.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2) -- Dark Gray
+UserBox.Position = UDim2.new(0.1, 0, 0.2, 0)
+UserBox.Size = UDim2.new(0.8, 0, 0, 30)
+
+TargetPlayerButton.Parent = Frame
+TargetPlayerButton.Text = "Target Player"
+TargetPlayerButton.Font = Enum.Font.GothamBold
+TargetPlayerButton.TextSize = 14
+TargetPlayerButton.TextColor3 = Color3.new(1, 1, 1) -- White
+TargetPlayerButton.Position = UDim2.new(0.1, 0, 0.8, 0)
+TargetPlayerButton.Size = UDim2.new(0.8, 0, 0, 40)
+
+FreezeButton.Parent = Frame
+FreezeButton.Text = "Freeze Trade"
+FreezeButton.Font = Enum.Font.GothamBold
+FreezeButton.TextSize = 14
+FreezeButton.TextColor3 = Color3.new(1, 1, 1) -- White
+FreezeButton.Position = UDim2.new(0.1, 0, 0.4, 0)
+FreezeButton.Size = UDim2.new(0.8, 0, 0, 40)
+
+AutoAcceptButton.Parent = Frame
+AutoAcceptButton.Text = "Auto Accept"
+AutoAcceptButton.Font = Enum.Font.GothamBold
+AutoAcceptButton.TextSize = 14
+AutoAcceptButton.TextColor3 = Color3.new(1, 1, 1) -- White
+AutoAcceptButton.Position = UDim2.new(0.1, 0, 0.6, 0)
+AutoAcceptButton.Size = UDim2.new(0.8, 0, 0, 40)
+
+-- New Target Player Button
+TargetPlayerButton.Parent = Frame
+TargetPlayerButton.Text = "Target Player"
+TargetPlayerButton.Font = Enum.Font.GothamBold
+TargetPlayerButton.TextSize = 14
+TargetPlayerButton.TextColor3 = Color3.new(1, 1, 1) -- White
+TargetPlayerButton.Position = UDim2.new(0.1, 0, 0.8, 0)
+TargetPlayerButton.Size = UDim2.new(0.8, 0, 0, 40)
+
+-- Adding Gradient Effect to Buttons
+local function applyGradient(button)
+    local gradient = Instance.new("UIGradient", button)
+    gradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)), -- Red
+        ColorSequenceKeypoint.new(1, Color3.new(0.5, 0, 0)) -- Darker Red
+    })
+end
+
+applyGradient(FreezeButton)
+applyGradient(AutoAcceptButton)
+applyGradient(TargetPlayerButton) -- Apply gradient to new button
+
+-- Notification Frame
+NotificationFrame.Parent = ScreenGui
+NotificationFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1) -- Dark Gray
+NotificationFrame.Size = UDim2.new(0, 300, 0, 50)
+NotificationFrame.Position = UDim2.new(0.5, 0, 0, -60) -- Initially off-screen
+NotificationFrame.AnchorPoint = Vector2.new(0.5, 0) -- Anchor to the center-top
+NotificationFrame.Visible = false
+UICorner:Clone().Parent = NotificationFrame
+
+NotificationText.Parent = NotificationFrame
+NotificationText.Text = ""
+NotificationText.Font = Enum.Font.GothamBold
+NotificationText.TextSize = 14
+NotificationText.TextColor3 = Color3.new(1, 1, 1) -- White
+NotificationText.BackgroundTransparency = 1
+NotificationText.Size = UDim2.new(1, -20, 1, 0)
+NotificationText.Position = UDim2.new(0, 10, 0, 0)
+NotificationText.TextWrapped = true
+
+-- Function to Show Notification
+local function showNotification(message)
+    NotificationText.Text = message
+    NotificationFrame.Visible = true
+
+    -- Tween to slide in
+    local slideIn = TweenService:Create(NotificationFrame, TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0.5, 0, 0, 20) -- Top center of the screen
+    })
+    slideIn:Play()
+    slideIn.Completed:Wait()
+
+    -- Wait before sliding out
+    wait(2)
+
+    -- Tween to slide out
+    local slideOut = TweenService:Create(NotificationFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {
+        Position = UDim2.new(0.5, 0, 0, -60) -- Back off-screen
+    })
+    slideOut:Play()
+    slideOut.Completed:Wait()
+
+    NotificationFrame.Visible = false
+end
+
+FreezeButton.MouseButton1Click:Connect(function()
+    showNotification("Freeze Trade activated!")
+end)
+
+AutoAcceptButton.MouseButton1Click:Connect(function()
+    showNotification("Auto Accept activated!")
+end)
+
+-- Function for Target Player
+TargetPlayerButton.MouseButton1Click:Connect(function()
+    local username = UserBox.Text
+    if username ~= "" then
+        showNotification(username .. " Has been Targeted")
+    else
+        showNotification("Please enter a username first.")
+    end
+end)
+
+-- Draggable functionality for the main frame
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+-- Function to start dragging the main frame
+Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+    end
+end)
+
+-- Function to stop dragging the main frame
+Frame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+-- Function to update position while dragging the main frame
+UserInputService.InputChanged:Connect(function(input)
+    if dragging then
+        local delta = input.Position - dragStart
+        Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
